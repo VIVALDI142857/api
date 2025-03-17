@@ -1,0 +1,15 @@
+numpy==1.24
+pandas
+matplotlib
+seaborn 
+scipy
+ydata-profiling
+scikit-learn
+xgboost
+keras
+umap-learn
+babyplots
+tensorflow
+pyclustering
+optuna
+catboost

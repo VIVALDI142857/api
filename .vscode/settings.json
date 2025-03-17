@@ -1,0 +1,10 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "cars",
+            "database": "${workspaceFolder:ssh_first_try}/cars.db"
+        }
+    ]
+}
