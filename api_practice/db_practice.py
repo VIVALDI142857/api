@@ -1,11 +1,13 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from fastapi import FastAPI, Depends, File, UploadFile
+from fastapi import FastAPI, Depends, File, UploadFile, HTTPException
 from typing import Annotated
 from pydantic import BaseModel
 import pandas as pd
 import io
 from typing import Annotated, List
+
+
 
 engine = create_async_engine('sqlite+aiosqlite:///clients.db')
 
@@ -100,8 +102,40 @@ async def setup_db():
     
 @app.post('/clients')
 async def load_content(session: SessionDep, file: UploadFile = File(...)):
-    contents =  await file.read()
-    X_test = pd.read_csv(io.StringIO(contents.decode('utf-8')))
+    
+    try:
+        contents =  await file.read()
+        X_test = pd.read_csv(io.StringIO(contents.decode('utf-8')))
+        
+        requ_cols = ['id',
+                    'fea_1',
+                    'fea_2',
+                    'fea_3',
+                    'fea_4',
+                    'fea_5',
+                    'fea_6',
+                    'fea_7',
+                    'fea_8',
+                    'fea_9',
+                    'fea_10',
+                    'fea_11',
+                    'OVD_t1_mean',
+                    'OVD_t1_max',
+                    'OVD_t2_mean',
+                    'OVD_t2_max',
+                    'OVD_t3_mean',
+                    'OVD_t3_max',
+                    'pay_normal_mean',
+                    'pay_normal_max',
+                    'prod_code_median',
+                    'update_date_mean',
+                    'report_date_mean',
+                    'prod_limit_mean',
+                    'new_balance_mean',
+                    'highest_balance_mean']
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Файл не содержит всех необходимых колонок.")
+    
     new_clients = []
     for _, row in X_test.iterrows():
         new_client = Clients(
@@ -137,6 +171,7 @@ async def load_content(session: SessionDep, file: UploadFile = File(...)):
     await session.commit()
     
     return {'status': 'success', 'added_rows': len(new_clients)}
+
 
 # @app.get('/clients', response_model=List[AddClient])
 # async def get_clients(session: SessionDep):
