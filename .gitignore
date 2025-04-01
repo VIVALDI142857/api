@@ -2,3 +2,5 @@ venv/
 mlartifacts/
 mlruns/
 catboostinfo/
+.env
+.gitignore

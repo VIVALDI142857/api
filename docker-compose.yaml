@@ -1,0 +1,37 @@
+services:
+  api:
+    build:
+      context: ./api_practice
+    ports:
+      - "9123:8000"
+    volumes:
+      - ./mlruns:/app/mlruns
+  
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.9.2
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    command: >
+      mlflow server
+      --backend-store-uri postgresql://vivaldi:357821@postgres/ml_db
+      --default-artifact-root s3://heisenbergtry
+      --host 0.0.0.0
+      --port 5000
+    depends_on:
+      - postgres
+  
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: vivaldi
+      POSTGRES_PASSWORD: 357821
+      POSTGRES_DB: ml_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:

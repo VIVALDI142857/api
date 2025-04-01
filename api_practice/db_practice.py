@@ -1,3 +1,6 @@
+from sqlalchemy import select, insert
+from sqlalchemy.exc import IntegrityError
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from fastapi import FastAPI, Depends, File, UploadFile, HTTPException
@@ -7,8 +10,6 @@ import pandas as pd
 import io
 from typing import Annotated, List
 
-
-
 engine = create_async_engine('sqlite+aiosqlite:///clients.db')
 
 new_session = async_sessionmaker(engine, expire_on_commit=False)
@@ -16,7 +17,7 @@ new_session = async_sessionmaker(engine, expire_on_commit=False)
 app = FastAPI()
 
 async def get_session():
-    async with new_session as session:
+    async with new_session() as session:
         yield session
         
         
@@ -28,7 +29,7 @@ class Base(DeclarativeBase):
 
 class Clients(Base):
     __tablename__ = 'clients'
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     fea_1: Mapped[int]
     fea_2: Mapped[float]
     fea_3: Mapped[int]
@@ -57,7 +58,6 @@ class Clients(Base):
     
 class AddClient(BaseModel):
     
-    id: int
     fea_1: int
     fea_2: float
     fea_3: int
@@ -99,78 +99,55 @@ async def setup_db():
     
 
 
-    
 @app.post('/clients')
 async def load_content(session: SessionDep, file: UploadFile = File(...)):
-    
     try:
-        contents =  await file.read()
+        contents = await file.read()
         X_test = pd.read_csv(io.StringIO(contents.decode('utf-8')))
+
+        # ✅ Validate Required Columns
+        requ_cols = [
+            'id', 'fea_1', 'fea_2', 'fea_3', 'fea_4', 'fea_5', 'fea_6', 'fea_7', 'fea_8', 'fea_9',
+            'fea_10', 'fea_11', 'OVD_t1_mean', 'OVD_t1_max', 'OVD_t2_mean', 'OVD_t2_max', 'OVD_t3_mean', 
+            'OVD_t3_max', 'pay_normal_mean', 'pay_normal_max', 'prod_code_median', 'update_date_mean', 
+            'report_date_mean', 'prod_limit_mean', 'new_balance_mean', 'highest_balance_mean'
+        ]
+        missing_cols = [col for col in requ_cols if col not in X_test.columns]
         
-        requ_cols = ['id',
-                    'fea_1',
-                    'fea_2',
-                    'fea_3',
-                    'fea_4',
-                    'fea_5',
-                    'fea_6',
-                    'fea_7',
-                    'fea_8',
-                    'fea_9',
-                    'fea_10',
-                    'fea_11',
-                    'OVD_t1_mean',
-                    'OVD_t1_max',
-                    'OVD_t2_mean',
-                    'OVD_t2_max',
-                    'OVD_t3_mean',
-                    'OVD_t3_max',
-                    'pay_normal_mean',
-                    'pay_normal_max',
-                    'prod_code_median',
-                    'update_date_mean',
-                    'report_date_mean',
-                    'prod_limit_mean',
-                    'new_balance_mean',
-                    'highest_balance_mean']
+        X_test.drop_duplicates(subset='id', inplace=True)
+
+        if missing_cols:
+            raise HTTPException(status_code=400, detail=f"Missing columns: {missing_cols}")
+
+        # ✅ Convert DataFrame to Dictionary
+        new_clients = X_test.to_dict(orient='records')
+
+        # ✅ Prevent Duplicates: Get Existing IDs
+        existing_ids = {row['id'] for row in new_clients}
+        existing_clients = await session.execute(select(Clients.id).where(Clients.id.in_(existing_ids)))
+        existing_ids_in_db = {row[0] for row in existing_clients.all()}
+
+        # ✅ Remove Duplicates from DataFrame
+        new_clients = [row for row in new_clients if row['id'] not in existing_ids_in_db]
+
+        if not new_clients:
+            return JSONResponse(content={"status": "no new data inserted"}, status_code=200)
+
+        # ✅ Bulk Insert (Much Faster!)
+        await session.execute(insert(Clients).values(new_clients))
+        await session.commit()
+
+        return JSONResponse(content={"status": "success", "added_rows": len(new_clients)}, status_code=201)
+
+    except IntegrityError:
+        await session.rollback()
+        raise HTTPException(status_code=400, detail="Duplicate ID found in database.")
+    
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Файл не содержит всех необходимых колонок.")
-    
-    new_clients = []
-    for _, row in X_test.iterrows():
-        new_client = Clients(
-            id=int(row['id']),
-            fea_1=int(row['fea_1']),
-            fea_2=float(row['fea_2']),
-            fea_3=int(row['fea_3']),
-            fea_4=float(row['fea_4']),
-            fea_5=int(row['fea_5']),
-            fea_6=int(row['fea_6']),
-            fea_7=int(row['fea_7']),
-            fea_8=int(row['fea_8']),
-            fea_9=int(row['fea_9']),
-            fea_10=int(row['fea_10']),
-            fea_11=float(row['fea_11']),
-            OVD_t1_mean=float(row['OVD_t1_mean']),
-            OVD_t1_max=int(row['OVD_t1_max']),
-            OVD_t2_mean=float(row['OVD_t2_mean']),
-            OVD_t2_max=int(row['OVD_t2_max']),
-            OVD_t3_mean=float(row['OVD_t3_mean']),
-            OVD_t3_max=int(row['OVD_t3_max']),
-            pay_normal_mean=float(row['pay_normal_mean']),
-            pay_normal_max=int(row['pay_normal_max']),
-            prod_code_median=float(row['prod_code_median']),
-            update_date_mean=int(row['update_date_mean']),
-            report_date_mean=int(row['report_date_mean']),
-            prod_limit_mean=float(row['prod_limit_mean']),
-            new_balance_mean=float(row['new_balance_mean']),
-            highest_balance_mean=float(row['highest_balance_mean'])
-        )
-        new_clients.append(new_client)
-    session.add_all(new_clients)
-    await session.commit()
-    
-    return {'status': 'success', 'added_rows': len(new_clients)}
+        await session.rollback()
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
+
 
 
 # @app.get('/clients', response_model=List[AddClient])
