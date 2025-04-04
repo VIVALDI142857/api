@@ -18,3 +18,5 @@ category_encoders
 lightgbm
 geopy
 tqdm
+psycopg2-binary
+boto3

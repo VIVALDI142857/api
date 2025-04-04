@@ -1,26 +1,22 @@
 services:
-  api:
-    build:
-      context: ./api_practice
-    ports:
-      - "9123:8000"
-    volumes:
-      - ./mlruns:/app/mlruns
-  
   mlflow:
+    build:
+      context: /home/vivaldi/MyProjects/ssh_first_try/api_practice
     image: ghcr.io/mlflow/mlflow:v2.9.2
     ports:
       - "5000:5000"
     env_file:
       - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
     command: >
       mlflow server
       --backend-store-uri postgresql://vivaldi:357821@postgres/ml_db
       --default-artifact-root s3://heisenbergtry
       --host 0.0.0.0
       --port 5000
-    depends_on:
-      - postgres
   
   postgres:
     image: postgres:13
@@ -32,6 +28,12 @@ services:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "vivaldi", "-d", "ml_db"]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+
 
 volumes:
   pg_data:
