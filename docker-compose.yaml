@@ -17,6 +17,8 @@ services:
       --default-artifact-root s3://heisenbergtry
       --host 0.0.0.0
       --port 5000
+    volumes:
+      - mlflow_data:/mlflow
   
   postgres:
     image: postgres:13
@@ -34,6 +36,27 @@ services:
       retries: 5
       start_period: 10s
 
+  clickhouse:
+    image: yandex/clickhouse-server:latest
+    environment:
+      - CLICKHOUSE_DB=ml_db
+      - CLICKHOUSE_USER=vivaldi
+      - CLICKHOUSE_PASSWORD=357821
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD", "vivaldi", "--query=SELECT 1"]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+
+
 
 volumes:
   pg_data:
+  mlflow_data:
+  clickhouse_data:
+
