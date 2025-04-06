@@ -1,3 +1,14 @@
+/etc/postgresql/15/main - заходить только как root (sudo -s)
+sudo systemctl restart postgresql - рестарт postgres
+pg_hba.conf - комбинация пользователь-база, с которого можно коннектиться.
+listen_addresses = '*'  - в postgresql.conf делает доступным postgresql для внешнего доступа.
+
+
+
+
+
+
+
 Задеплоить mlflow на локльном сервере вместе с подключением к S3 хранилищу и к POSTGRES, задеплоить POSTGRES, задеплоить open-source S3 хранилище. Предварительно прогуглить что mlflow может взаимодействовать с этим конкретным S3:
 
 OPTIONAL
@@ -9,3 +20,8 @@ OPTIONAL
 5. Задеплоить Clickhouse по документации
 6. Создать там таблицу которая содержит в себе модели с id, по которым их можно достать.
 7. Ознакомиться с gRPC, Создать дополнительный API через gRPC.
+
+
+mlflow server --backend-store-uri postgresql://vivaldi:357821@127.0.0.1:5432/ml_db --default-artifact-root s3://heisenbergtry --host 0.0.0.0 --port 5000
+
+

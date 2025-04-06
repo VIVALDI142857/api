@@ -1,62 +1,9 @@
 services:
-  mlflow:
+  fastapi:
     build:
-      context: /home/vivaldi/MyProjects/ssh_first_try/api_practice
-    image: ghcr.io/mlflow/mlflow:v2.9.2
+      context: ./api_practice
     ports:
-      - "5000:5000"
-    env_file:
-      - .env
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: always
-    command: >
-      mlflow server
-      --backend-store-uri postgresql://vivaldi:357821@postgres/ml_db
-      --default-artifact-root s3://heisenbergtry
-      --host 0.0.0.0
-      --port 5000
-    volumes:
-      - mlflow_data:/mlflow
-  
-  postgres:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: vivaldi
-      POSTGRES_PASSWORD: 357821
-      POSTGRES_DB: ml_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "vivaldi", "-d", "ml_db"]
-      interval: 5s
-      retries: 5
-      start_period: 10s
-
-  clickhouse:
-    image: yandex/clickhouse-server:latest
-    environment:
-      - CLICKHOUSE_DB=ml_db
-      - CLICKHOUSE_USER=vivaldi
-      - CLICKHOUSE_PASSWORD=357821
-    ports:
-      - "8123:8123"
-      - "9000:9000"
-    volumes:
-      - clickhouse_data:/var/lib/clickhouse
-    healthcheck:
-      test: ["CMD", "vivaldi", "--query=SELECT 1"]
-      interval: 5s
-      retries: 5
-      start_period: 10s
+      - "10000:10000"
 
 
-
-volumes:
-  pg_data:
-  mlflow_data:
-  clickhouse_data:
 
