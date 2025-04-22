@@ -1,10 +1,16 @@
 services:
   fastapi:
+    container_name: fastapi
     build: ./api_practice
     ports:
       - "9123:8000"
     env_file:
       - .env
+  streamlit:
+    container_name: streamlit
+    build: ./streamlit
+    ports:
+      - "8501:8501"
 
 
 
