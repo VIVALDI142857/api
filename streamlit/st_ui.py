@@ -6,7 +6,7 @@ import mlflow
 import json
 from sklearn.metrics import f1_score
 
-base_url = 'http://fastapi:8000'
+base_url = 'http://fastapi:'
 
 
 df = None
