@@ -1,21 +1,29 @@
+# Use an official Python image
 FROM python:3.10-slim
 
-
+# Set working directory
 WORKDIR /app
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y curl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Copy your requirements (optional)
 COPY requirements.txt .
 
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Install Python dependencies
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
-COPY main.py .
+# Optional: copy your local code (if needed)
+# COPY . .
 
-# Expose the port
-EXPOSE 8000
+# Expose MLflow port
+EXPOSE 5000
 
+# Set default command to be overridden in docker-compose
+CMD ["mlflow", "server"]
 
-# Run the application with Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 
 

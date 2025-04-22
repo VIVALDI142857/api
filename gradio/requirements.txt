@@ -1,0 +1,9 @@
+numpy==1.24.2
+pandas
+scikit-learn
+catboost
+mlflow
+python-multipart
+psycopg2-binary
+boto3
+awscli

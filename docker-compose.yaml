@@ -1,9 +1,10 @@
 services:
   fastapi:
-    build:
-      context: ./api_practice
+    build: ./api_practice
     ports:
-      - "10000:10000"
+      - "9123:8000"
+    env_file:
+      - .env
 
 
 
