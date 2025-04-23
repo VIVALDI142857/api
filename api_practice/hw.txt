@@ -18,11 +18,9 @@ OPTIONAL
 4. mlflow server --host 0.0.0.0  --port 5000 <здесь вставить ссылку на S3 и на POSTGRES>
 6. Создать там таблицу которая содержит в себе модели с id, по которым их можно достать.
 7. Ознакомиться с gRPC, Создать дополнительный API через gRPC.
-10. Сделать UI через STREAMLIT или Gradio
-11. Попросить карту у Elizabeth Seth
 12. Clickhouse Connector
 13. Проверить что правильный X_test в API
-Запихнуть UI в Docker-compose, и то же самое сделать с gradio, утобоих должна быть кнопка загрузить excel
+Запихнуть UI в Docker-compose, и то же самое сделать с gradio, у обоих должна быть кнопка загрузить excel
 
 mlflow server --backend-store-uri postgresql://vivaldi:357821@127.0.0.1:5432/ml_db --default-artifact-root s3://heisenbergtry --host 0.0.0.0 --port 5000
 

@@ -3,7 +3,7 @@ import pandas as pd
 import requests
 import io
 
-base_url = 'http://localhost:9123'
+base_url = 'http://fastapi:8000'
 
 def predict(file):
     filename = file.name
@@ -39,4 +39,4 @@ with gr.Blocks() as demo:
     upload.change(predict, upload, df_output)
     export_btn.click(export_csv, inputs=[df_output, download], outputs=download)
 
-demo.launch(server_name="0.0.0.0", server_port=8543)
+demo.launch(server_name="0.0.0.0", server_port=7860)
