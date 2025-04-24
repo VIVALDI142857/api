@@ -21,3 +21,6 @@ tqdm
 psycopg2-binary
 boto3
 lightgbm
+psycopg2-binary 
+google-cloud-storage 
+gcsfs

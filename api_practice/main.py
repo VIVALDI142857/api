@@ -2,38 +2,18 @@ from fastapi import FastAPI, File, UploadFile
 from pydantic import BaseModel, ConfigDict, Field
 import pandas as pd
 import numpy as np
-import re
 from typing import List
 from time import sleep
 import json
 import xgboost
 import catboost
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
-import scipy as sc
-from ydata_profiling import ProfileReport
-from scipy import stats as sts
 import sklearn 
-from sklearn.preprocessing import PowerTransformer
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-pd.set_option('display.max_columns', None)
-from sklearn.impute import SimpleImputer, KNNImputer
-sklearn.impute.KNNImputer
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, roc_curve, fbeta_score, precision_recall_curve, average_precision_score, balanced_accuracy_score
-from sklearn.model_selection import train_test_split
-import phik
 from catboost import CatBoostClassifier
 from xgboost import XGBClassifier
-from sklearn.pipeline import Pipeline
 import mlflow
 import mlflow.sklearn  # Если нужно логировать модели sklearn
-import os
-from mlflow.models import infer_signature
-import optuna
 from fastapi import FastAPI
 import mlflow.pyfunc
 from pydantic import BaseModel
@@ -44,10 +24,10 @@ app = FastAPI()
 import mlflow
 mlflow.set_tracking_uri("http://hostname123.zapto.org:5000")
 
-
-logged_model = 'runs:/671a6251d94b4237b8500f80b43ed800/model_pipeline'
+logged_model = 'runs:/4c0959326a794422a6c07c0c7a16002a/model_pipeline'
 
 model = mlflow.pyfunc.load_model(logged_model)
+
 
 class Df_str(BaseModel):
     data: str

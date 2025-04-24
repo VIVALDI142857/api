@@ -11,10 +11,14 @@ services:
     build: ./streamlit
     ports:
       - "8501:8501"
+    depends_on:
+      - fastapi
   gradio:
     container_name: gradio
     build: ./gradio
     ports: 
      - "7860:7860"
+    depends_on:
+      - fastapi
 
 

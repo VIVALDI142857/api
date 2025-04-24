@@ -3,7 +3,6 @@ pandas
 matplotlib
 seaborn 
 scipy
-ydata-profiling
 scikit-learn
 xgboost
 keras
@@ -21,3 +20,4 @@ tqdm
 psycopg2-binary
 boto3
 python-multipart
+google-cloud-storage
