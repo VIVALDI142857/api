@@ -1,11 +1,16 @@
 services:
   fastapi:
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/mlflow-access.json
     container_name: fastapi
     build: ./api_practice
     ports:
       - "8000:8000"
     env_file:
       - .env
+    volumes:
+      - /home/vivaldi/.gcp:/credentials
+
   streamlit:
     container_name: streamlit
     build: ./streamlit
