@@ -1,0 +1,15 @@
+numpy==1.24.2
+pandas
+scikit-learn
+catboost
+mlflow==2.20.3
+lightgbm
+psycopg2-binary
+boto3
+python-multipart
+google-cloud-storage
+grpcio
+grpcio-tools
+psutil==5.9.0
+scipy==1.13.1
+xgboost==2.1.4

@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package predict;
+
+service Predictor {
+  rpc PredictFromFile (FileRequest) returns (PredictResponse);
+  rpc PredictFromStr (StrRequest) returns (PredictResponse);
+  rpc PredictEachCol (DataFrameRequest) returns (PredictResponse);
+}
+
+message FileRequest {
+  bytes csv_file = 1;
+}
+
+message StrRequest {
+  string json_data = 1;
+}
+
+message Row {
+  int32 Followers = 1;
+  int32 Following = 2;
+  int32 Posts = 3;
+  int32 Bio = 4;
+  int32 profile_picture = 5;
+  int32 external_link = 6;
+  int32 mutual_friends = 7;
+  int32 Threads = 8;
+  float Following_Followers = 9;
+  float Posts_Followers = 10;
+}
+
+message DataFrameRequest {
+  repeated Row data = 1;
+}
+
+message PredictResponse {
+  string predictions_json = 1;
+}
