@@ -6,11 +6,18 @@ services:
     build: ./api_practice
     ports:
       - "8000:8000"
-    env_file:
-      - .env
     volumes:
       - /home/vivaldi/.gcp:/credentials
 
+  grpc:
+    container_name: grpc
+    build: ./grpc
+    ports:
+      - "50051:50051"
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/credentials/mlflow-access.json
+    volumes:
+      - /home/vivaldi/.gcp:/credentials
   streamlit:
     container_name: streamlit
     build: ./streamlit

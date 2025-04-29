@@ -21,8 +21,6 @@ RUN pip install --upgrade pip && \
 # Expose MLflow port
 EXPOSE 5000
 
-# Set default command to be overridden in docker-compose
-CMD ["mlflow", "server"]
 
 
 
